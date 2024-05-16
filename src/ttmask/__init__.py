@@ -8,3 +8,7 @@ except PackageNotFoundError:
     __version__ = "uninstalled"
 __author__ = "Miles Graham"
 __email__ = "miles.graham@balliol.ox.ac.uk"
+
+from ._cli import cli
+from .sphere import sphere
+
