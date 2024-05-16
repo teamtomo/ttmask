@@ -1,0 +1,11 @@
+# Do not edit - changes here will be overwritten by Copier
+_commit: v1
+_src_path: gh:pydev-guide/pyrepo-copier
+author_email: miles.graham@balliol.ox.ac.uk
+author_name: Miles Graham
+github_username: teamtomo
+mode: tooling
+module_name: ttmask
+project_name: ttmask
+project_short_description: CLI tool for mask creation in cryo-EM/ET
+
