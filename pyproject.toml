@@ -35,7 +35,10 @@ classifiers = [
     "Typing :: Typed",
 ]
 # add your package dependencies here
-dependencies = []
+dependencies = [
+    "numpy",
+    "typer",
+]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 # "extras" (e.g. for `pip install .[test]`)
@@ -59,8 +62,8 @@ repository = "https://github.com/teamtomo/ttmask"
 # Entry points
 # https://peps.python.org/pep-0621/#entry-points
 # same as console_scripts entry point
-# [project.scripts]
-# ttmask-cli = "ttmask:main_cli"
+[project.scripts]
+ttmask = "ttmask:cli"
 
 # [project.entry-points."some.group"]
 # tomatoes = "ttmask:main_tomatoes"
