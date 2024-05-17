@@ -11,4 +11,5 @@ __email__ = "miles.graham@balliol.ox.ac.uk"
 
 from ._cli import cli
 from .sphere import sphere
+from .cylinder import cylinder
 
