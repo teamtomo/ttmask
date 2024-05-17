@@ -1,7 +1,6 @@
 from ._cli import cli
 import numpy as np
 import einops
-import napari
 import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
@@ -39,5 +38,4 @@ def sphere(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    #   mrcfile.read("bla.mrc")
     mrcfile.write("sphere.mrc", mask, voxel_size=4, overwrite=True)
