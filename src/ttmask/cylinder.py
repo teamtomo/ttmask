@@ -19,7 +19,7 @@ def cylinder(
 
     c = boxsize // 2
     center = np.array([c, c, c])
-    mask = np.zeros(shape=(boxsize, boxsize, boxsize))
+    mask = np.zeros(shape=(boxsize, boxsize, boxsize), dtype=np.float32)
 
     # 3d positions of all voxels
     positions = np.indices([boxsize, boxsize, boxsize])
