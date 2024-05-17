@@ -38,6 +38,8 @@ classifiers = [
 dependencies = [
     "numpy",
     "typer",
+    "einops",
+    "napari",
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
