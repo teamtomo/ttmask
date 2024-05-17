@@ -4,8 +4,6 @@ import einops
 import napari
 import typer
 
-typer.main.get_command_name = lambda name: name
-
 @cli.command(name='sphere')
 def sphere(
     boxsize: int = typer.Option(...),
