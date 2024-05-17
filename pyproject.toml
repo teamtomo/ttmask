@@ -39,7 +39,7 @@ dependencies = [
     "numpy",
     "typer",
     "einops",
-    "napari",
+    "mrcfile",
 ]
 
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
