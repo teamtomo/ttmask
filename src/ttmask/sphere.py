@@ -4,6 +4,8 @@ import einops
 import napari
 import typer
 from scipy.ndimage import distance_transform_edt
+import mrcfile
+
 
 @cli.command(name='sphere')
 def sphere(
@@ -11,12 +13,12 @@ def sphere(
     sphere_diameter: float = typer.Option(...),
     soft_edge_size: int = typer.Option(...),
 ):
-
     sphere_radius = sphere_diameter / 2
+    c = boxsize // 2
+    center = np.array([c, c, c])
+    mask = np.zeros(shape=(boxsize, boxsize, boxsize), dtype=np.float32)
 
-    center = np.array([boxsize // 2, boxsize // 2,
-                       boxsize // 2])
-    mask = np.zeros(shape=(boxsize, boxsize, boxsize))
+    print(mask.dtype)
 
     # 2d positions of all pixels
     positions = np.indices([boxsize, boxsize, boxsize])
@@ -37,7 +39,5 @@ def sphere(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    viewer = napari.Viewer(ndisplay=3)
-    viewer.add_image(mask)
-    napari.run()
-
+    #   mrcfile.read("bla.mrc")
+    mrcfile.write("sphere.mrc", mask, voxel_size=4, overwrite=True)
