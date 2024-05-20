@@ -11,6 +11,7 @@ def sphere(
     boxsize: int = typer.Option(...),
     sphere_diameter: float = typer.Option(...),
     soft_edge_size: int = typer.Option(...),
+    mrc_voxel_size: float = typer.Option(...),
 ):
     sphere_radius = sphere_diameter / 2
     c = boxsize // 2
@@ -38,4 +39,4 @@ def sphere(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write("sphere.mrc", mask, voxel_size=4, overwrite=True)
+    mrcfile.write("sphere.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)

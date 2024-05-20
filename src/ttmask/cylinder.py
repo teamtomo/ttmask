@@ -13,6 +13,7 @@ def cylinder(
     cylinder_outer_diameter: float = typer.Option(...),
     cylinder_inner_diameter: float = typer.Option(0),
     soft_edge_size: int = typer.Option(...),
+    mrc_voxel_size: float = typer.Option(...),
 ):
     cylinder_outer_radius = cylinder_outer_diameter / 2
     cylinder_inner_radius = cylinder_inner_diameter / 2
@@ -43,4 +44,5 @@ def cylinder(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write("cylinder.mrc", mask, voxel_size=4, overwrite=True)
+    mrcfile.write("cylinder.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
+
