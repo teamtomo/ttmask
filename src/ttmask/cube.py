@@ -1,36 +1,36 @@
-from ._cli import cli
 import numpy as np
 import einops
 import typer
+# from ._cli import cli
 from scipy.ndimage import distance_transform_edt
 import mrcfile
+import napari
 
 
-@cli.command(name='sphere')
-def sphere(
+# @cli.command(name='cube')
+def cube(
     boxsize: int = typer.Option(...),
-    sphere_diameter: float = typer.Option(...),
-    soft_edge_size: int = typer.Option(...),
+    cube_sidelength: float =typer.Option(...),
+    soft_edge_size: float = typer.Option(...),
     mrc_voxel_size: float = typer.Option(...),
 ):
-    sphere_radius = sphere_diameter / 2
     c = boxsize // 2
     center = np.array([c, c, c])
     mask = np.zeros(shape=(boxsize, boxsize, boxsize), dtype=np.float32)
 
-    print(mask.dtype)
-
-    # 2d positions of all pixels
+    # 3d positions of all voxels
     positions = np.indices([boxsize, boxsize, boxsize])
     positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
 
+    # calculate the distance between the center and every pixel position
+    print(center.shape)
+    print(positions.shape)
+
     print('calculating distance')
     difference = np.abs(positions - center)  # (100, 100, 100, 3)
-    distance = np.sum(difference ** 2, axis=-1) ** 0.5
 
-    # calculate whether each pixel is inside or outside the circle
-    print('calculating which pixels are in sphere')
-    idx = distance < sphere_radius
+    idx = np.all(difference < (np.array(cube_sidelength) / 2), axis=-1)
+
     mask[idx] = 1
 
     distance_from_edge = distance_transform_edt(mask == 0)
@@ -39,5 +39,6 @@ def sphere(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write("sphere.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
+    mrcfile.write("cube.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
 
+cube(100, 20, 3, 1.321)
