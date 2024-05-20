@@ -13,6 +13,7 @@ def cuboid(
     boxsize: int = typer.Option(...),
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
     soft_edge_size: float = typer.Option(...),
+    mrc_voxel_size: float = typer.Option(...),
 ):
     c = boxsize // 2
     center = np.array([c, c, c])
@@ -47,4 +48,4 @@ def cuboid(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write("cuboid.mrc", mask, voxel_size=4, overwrite=True)
+    mrcfile.write("cuboid.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
