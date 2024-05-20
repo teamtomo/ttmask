@@ -1,13 +1,12 @@
 import numpy as np
 import einops
 import typer
-# from ._cli import cli
+from ._cli import cli
 from scipy.ndimage import distance_transform_edt
 import mrcfile
-import napari
 
 
-# @cli.command(name='cube')
+@cli.command(name='cube')
 def cube(
     boxsize: int = typer.Option(...),
     cube_sidelength: float =typer.Option(...),
@@ -40,5 +39,3 @@ def cube(
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
     mrcfile.write("cube.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
-
-cube(100, 20, 3, 1.321)
