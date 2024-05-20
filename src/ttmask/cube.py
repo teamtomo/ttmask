@@ -6,7 +6,7 @@ from scipy.ndimage import distance_transform_edt
 import mrcfile
 
 
-# @cli.command(name='cube')
+@cli.command(name='cube')
 def cube(
     boxsize: int = typer.Option(...),
     cube_sidelength: float =typer.Option(...),
