@@ -10,17 +10,18 @@ import mrcfile
 
 @cli.command(name='cuboid')
 def cuboid(
-    boxsize: int = typer.Option(...),
+    sidelength: int = typer.Option(...),
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
-    soft_edge_size: float = typer.Option(...),
+    soft_edge_width: float = typer.Option(0),
     mrc_voxel_size: float = typer.Option(...),
+    output: str = typer.Option("cuboid.mrc"),
 ):
-    c = boxsize // 2
+    c = sidelength // 2
     center = np.array([c, c, c])
-    mask = np.zeros(shape=(boxsize, boxsize, boxsize), dtype=np.float32)
+    mask = np.zeros(shape=(sidelength, sidelength, sidelength), dtype=np.float32)
 
     # 3d positions of all voxels
-    positions = np.indices([boxsize, boxsize, boxsize])
+    positions = np.indices([sidelength, sidelength, sidelength])
     positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
 
     # calculate the distance between the center and every pixel position
@@ -43,9 +44,9 @@ def cuboid(
     mask[idx] = 1
 
     distance_from_edge = distance_transform_edt(mask == 0)
-    boundary_pixels = (distance_from_edge <= soft_edge_size) & (distance_from_edge != 0)
-    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_size) * np.pi
+    boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
+    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_width) * np.pi
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write("cuboid.mrc", mask, voxel_size= mrc_voxel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size= mrc_voxel_size, overwrite=True)
