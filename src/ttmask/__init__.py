@@ -15,5 +15,6 @@ from .cylinder import cylinder
 from .cuboid import cuboid
 from .cube import cube
 from .cone import cone
+from .ellipsoid import ellipsoid
 
 
