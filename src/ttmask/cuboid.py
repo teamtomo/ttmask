@@ -13,7 +13,7 @@ def cuboid(
     sidelength: int = typer.Option(...),
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
     soft_edge_width: float = typer.Option(0),
-    mrc_voxel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(...),
     output: str = typer.Option("cuboid.mrc"),
 ):
     c = sidelength // 2
@@ -39,9 +39,9 @@ def cuboid(
 
     # mask[np.logical_not(idx)] = 1 #if you wanted to do opposite for whatever reason
 
-    idx = np.all(difference < (np.array(cuboid_sidelengths) / 2), axis=-1)
+    inside_cuboid = np.all(difference < (np.array(cuboid_sidelengths) / (2 * pixel_size)), axis=-1)
 
-    mask[idx] = 1
+    mask[inside_cuboid] = 1
 
     distance_from_edge = distance_transform_edt(mask == 0)
     boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
@@ -49,4 +49,4 @@ def cuboid(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write(output, mask, voxel_size= mrc_voxel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)

@@ -12,7 +12,7 @@ def cone(
     cone_height: float = typer.Option(...),
     cone_base_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
-    mrc_voxel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(...),
     output: str = typer.Option("cone.mrc")
 ):
     c = sidelength // 2
@@ -41,10 +41,10 @@ def cone(
     z_distance = centered[:, :, :, 0]  # (100, 100, 100)
 
     # Calculate the angle from the tip of the cone to the edge of the base
-    cone_base_radius = cone_base_diameter / 2
+    cone_base_radius = (cone_base_diameter / 2) / pixel_size
     cone_angle = np.rad2deg(np.arctan(cone_base_radius / cone_height))
 
-    within_cone_height = z_distance < cone_height
+    within_cone_height = z_distance < (cone_height / pixel_size)
     within_cone_angle = angles < cone_angle
 
     # mask[within_cone_height] = 1
@@ -62,6 +62,6 @@ def cone(
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
 
-    mrcfile.write(output, mask, voxel_size= mrc_voxel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
 
 

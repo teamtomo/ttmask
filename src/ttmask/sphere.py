@@ -11,7 +11,7 @@ def sphere(
     sidelength: int = typer.Option(...),
     sphere_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
-    mrc_voxel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(...),
     output: str = typer.Option("sphere.mrc"),
 ):
     sphere_radius = sphere_diameter / 2
@@ -31,7 +31,7 @@ def sphere(
 
     # calculate whether each pixel is inside or outside the circle
     print('calculating which pixels are in sphere')
-    idx = distance < sphere_radius
+    idx = distance < (sphere_radius / pixel_size)
     mask[idx] = 1
 
     distance_from_edge = distance_transform_edt(mask == 0)
@@ -40,5 +40,5 @@ def sphere(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write(output, mask, voxel_size= mrc_voxel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
 

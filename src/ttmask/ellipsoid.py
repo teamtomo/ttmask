@@ -13,7 +13,7 @@ def ellipsoid(
     height: float = typer.Option(...),
     depth: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
-    mrc_voxel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(...),
     output: str = typer.Option("ellipsoid.mrc"),
 ):
     c = sidelength // 2
@@ -31,9 +31,9 @@ def ellipsoid(
     y_magnitude = difference[:, :, :, 1]
     z_magnitude = difference[:, :, :, 0]
 
-    x_axis_length = depth / 2
-    y_axis_length = height / 2
-    z_axis_length = width / 2
+    z_axis_length = depth / (2 * pixel_size)
+    y_axis_length = height / (2 * pixel_size)
+    x_axis_length = width / (2 * pixel_size)
 
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
             (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
@@ -45,4 +45,4 @@ def ellipsoid(
 
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
-    mrcfile.write(output, mask, voxel_size=mrc_voxel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
