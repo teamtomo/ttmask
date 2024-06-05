@@ -15,6 +15,7 @@ def cuboid(
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(...),
     output: str = typer.Option("cuboid.mrc"),
+    wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -42,6 +43,10 @@ def cuboid(
     inside_cuboid = np.all(difference < (np.array(cuboid_sidelengths) / (2 * pixel_size)), axis=-1)
 
     mask[inside_cuboid] = 1
+
+    if wall_thickness != 0:
+        within_hollowing = np.all(difference < ((np.array(cuboid_sidelengths) / (2 * pixel_size)) - wall_thickness), axis=-1)
+        mask[within_hollowing] = 0
 
     distance_from_edge = distance_transform_edt(mask == 0)
     boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
