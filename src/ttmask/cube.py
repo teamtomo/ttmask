@@ -1,9 +1,10 @@
 import numpy as np
 import einops
 import typer
-from ._cli import cli
 from scipy.ndimage import distance_transform_edt
 import mrcfile
+
+from ._cli import cli
 
 
 @cli.command(name='cube')
