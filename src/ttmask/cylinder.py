@@ -1,7 +1,6 @@
 import numpy as np
 import einops
 import typer
-from scipy.ndimage import distance_transform_edt
 import mrcfile
 
 from ._cli import cli
