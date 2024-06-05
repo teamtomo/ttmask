@@ -4,6 +4,7 @@ import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
 from ._cli import cli
+from .soft_edge import soft_edge
 
 
 @cli.command(name='cone')
@@ -13,7 +14,7 @@ def cone(
     cone_base_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cone.mrc")
+    output: str = typer.Option("cone.mrc"),
 ):
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -50,16 +51,14 @@ def cone(
     # mask[within_cone_height] = 1
     mask[np.logical_and(within_cone_height, within_cone_angle)] = 1
 
+    #   need to adjust the center of the hollow cone otherwise the cone thins towards the apex
+    # thickness will need to decrease towards the apex anyway - it's surely not possible / realistic?
+
     # Shift the mask in the z-axis by cone_height / 2
     z_shift = -int(cone_height / 2)
     mask = np.roll(mask, z_shift, axis=0)
 
-
-    distance_from_edge = distance_transform_edt(mask == 0)
-    boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
-    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_width) * np.pi
-
-    mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
+    soft_edge(mask, soft_edge_width)
 
 
     mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
