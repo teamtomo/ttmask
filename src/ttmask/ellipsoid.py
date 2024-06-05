@@ -16,6 +16,7 @@ def ellipsoid(
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
     output: str = typer.Option("ellipsoid.mrc"),
+    wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -39,6 +40,11 @@ def ellipsoid(
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
         (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
     mask[in_ellipsoid] = 1
+    
+    if wall_thickness != 0:
+        in_hollowing = (((x_magnitude) ** 2) / ((x_axis_length - wall_thickness) ** 2)) + ((y_magnitude ** 2) / ((y_axis_length - wall_thickness) ** 2)) + (
+            (z_magnitude ** 2) / ((z_axis_length - wall_thickness) ** 2)) <= 1
+        mask[in_hollowing] = 0
 
     mask = add_soft_edge(mask, soft_edge_width)
 

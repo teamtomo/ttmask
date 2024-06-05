@@ -14,6 +14,7 @@ def sphere(
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
     output: str = typer.Option("sphere.mrc"),
+    wall_thickness: float = typer.Option(0),
 ):
     sphere_radius = sphere_diameter / 2
     c = sidelength // 2
@@ -34,7 +35,11 @@ def sphere(
     print('calculating which pixels are in sphere')
     idx = distance < (sphere_radius / pixel_size)
     mask[idx] = 1
-
+    
+    if wall_thickness != 0:
+        within_hollowing = distance < ((sphere_radius - wall_thickness) / pixel_size)
+        mask[within_hollowing] = 0
+        
     mask = add_soft_edge(mask, soft_edge_width)
 
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
