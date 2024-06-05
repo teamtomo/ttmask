@@ -4,7 +4,7 @@ import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
 from ._cli import cli
-from .soft_edge import soft_edge
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='cone')
@@ -24,7 +24,7 @@ def cone(
     positions = np.indices([sidelength, sidelength, sidelength])
     positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
 
-    centered = positions - center  #pixels relative to center point
+    centered = positions - center  # pixels relative to center point
     magnitudes = np.linalg.norm(centered, axis=-1)
 
     magnitudes = einops.rearrange(magnitudes, 'd h w -> d h w 1')
@@ -57,10 +57,6 @@ def cone(
     # Shift the mask in the z-axis by cone_height / 2
     z_shift = -int(cone_height / 2)
     mask = np.roll(mask, z_shift, axis=0)
+    mask = add_soft_edge(mask, soft_edge_width)
 
-    soft_edge(mask, soft_edge_width)
-
-
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
-
-
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

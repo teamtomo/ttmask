@@ -4,13 +4,13 @@ import typer
 from ._cli import cli
 from scipy.ndimage import distance_transform_edt
 import mrcfile
-from .soft_edge import soft_edge
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='cube')
 def cube(
     sidelength: int = typer.Option(...),
-    cube_sidelength: float =typer.Option(...),
+    cube_sidelength: float = typer.Option(...),
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(...),
     output: str = typer.Option("cube.mrc")
@@ -34,6 +34,6 @@ def cube(
 
     mask[in_cube] = 1
 
-    soft_edge(mask, soft_edge_width)
+    mask = add_soft_edge(mask, soft_edge_width)
 
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

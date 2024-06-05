@@ -4,7 +4,7 @@ import einops
 import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
-from .soft_edge import soft_edge
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='ellipsoid')
@@ -37,9 +37,9 @@ def ellipsoid(
     x_axis_length = width / (2 * pixel_size)
 
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
-            (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
+        (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
     mask[in_ellipsoid] = 1
 
-    soft_edge(mask, soft_edge_width)
+    mask = add_soft_edge(mask, soft_edge_width)
 
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

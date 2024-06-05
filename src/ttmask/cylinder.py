@@ -4,7 +4,7 @@ import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
 from ._cli import cli
-from .soft_edge import soft_edge
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='cylinder')
@@ -40,7 +40,6 @@ def cylinder(
     mask[np.logical_and(idx_z, idx_xy_outer)] = 1
     mask[np.logical_and(idx_z, idx_xy_inner)] = 0
 
-    soft_edge(mask, soft_edge_width)
+    mask = add_soft_edge(mask, soft_edge_width)
 
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
-
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
