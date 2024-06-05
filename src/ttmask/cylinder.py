@@ -10,14 +10,13 @@ from ._cli import cli
 def cylinder(
     sidelength: int = typer.Option(...),
     cylinder_height: float = typer.Option(...),
-    cylinder_outer_diameter: float = typer.Option(...),
-    cylinder_inner_diameter: float = typer.Option(0),
+    cylinder_diameter: float = typer.Option(...),
+    wall_thickness: float = typer.Option(0),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
     output: str = typer.Option("cylinder.mrc")
 ):
-    cylinder_outer_radius = cylinder_outer_diameter / 2
-    cylinder_inner_radius = cylinder_inner_diameter / 2
+    cylinder_radius = cylinder_diameter / 2
 
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -29,15 +28,17 @@ def cylinder(
 
     print('calculating distance')
     difference = np.abs(positions - center)  # (100, 100, 100, 3)
-
     xy_distance = np.sum(difference[:, :, :, [1, 2]] ** 2, axis=-1) ** 0.5
+    within_z = difference[:, :, :, 0] < (cylinder_height / (2 * pixel_size))
+    within_xy = xy_distance < (cylinder_radius / pixel_size)
 
-    idx_z = difference[:, :, :, 0] < (cylinder_height / (2 * pixel_size))
-    idx_xy_outer = xy_distance < (cylinder_outer_radius / pixel_size)
-    idx_xy_inner = xy_distance < (cylinder_inner_radius / pixel_size)
 
-    mask[np.logical_and(idx_z, idx_xy_outer)] = 1
-    mask[np.logical_and(idx_z, idx_xy_inner)] = 0
+    mask[np.logical_and(within_z, within_xy)] = 1
+
+    if wall_thickness != 0:
+        within_z_hollowing = difference[:, :, :, 0] < (cylinder_height - wall_thickness) / (2 * pixel_size)
+        within_xy_hollowing = xy_distance < ((cylinder_radius - wall_thickness) / pixel_size)
+        mask[np.logical_and(within_z_hollowing, within_xy_hollowing)] = 0
 
     distance_from_edge = distance_transform_edt(mask == 0)
     boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)

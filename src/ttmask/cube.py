@@ -12,7 +12,8 @@ def cube(
     cube_sidelength: float =typer.Option(...),
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cube.mrc")
+    output: str = typer.Option("cube.mrc"),
+    wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -29,9 +30,12 @@ def cube(
     print('calculating distance')
     difference = np.abs(positions - center)  # (100, 100, 100, 3)
 
-    in_cube = np.all(difference < (np.array(cube_sidelength / pixel_size) / 2), axis=-1)
-
+    in_cube = np.all(difference < np.array(cube_sidelength) / (pixel_size * 2), axis=-1)
     mask[in_cube] = 1
+
+    if wall_thickness != 0:
+        within_hollowing = np.all(difference < ((np.array(cube_sidelength) / (pixel_size * 2)) - wall_thickness), axis=-1)
+        mask[within_hollowing] = 0
 
     distance_from_edge = distance_transform_edt(mask == 0)
     boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
