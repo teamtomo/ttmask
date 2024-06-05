@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import einops
 import typer
@@ -12,7 +14,7 @@ def cube(
     cube_sidelength: float =typer.Option(...),
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cube.mrc"),
+    output: Path = typer.Option(Path("cube.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from ._cli import cli
 import numpy as np
 import einops
@@ -14,7 +16,7 @@ def ellipsoid(
     depth: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("ellipsoid.mrc"),
+    output: Path = typer.Option(Path("ellipsoid.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2
@@ -37,12 +39,13 @@ def ellipsoid(
     x_axis_length = width / (2 * pixel_size)
 
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
-            (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
+        (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
     mask[in_ellipsoid] = 1
 
     if wall_thickness != 0:
-        in_hollowing = (((x_magnitude) ** 2) / ((x_axis_length - wall_thickness) ** 2)) + ((y_magnitude ** 2) / ((y_axis_length - wall_thickness) ** 2)) + (
-            (z_magnitude ** 2) / ((z_axis_length - wall_thickness) ** 2)) <= 1
+        in_hollowing = (((x_magnitude) ** 2) / ((x_axis_length - wall_thickness) ** 2)) + (
+                (y_magnitude ** 2) / ((y_axis_length - wall_thickness) ** 2)) + (
+                           (z_magnitude ** 2) / ((z_axis_length - wall_thickness) ** 2)) <= 1
         mask[in_hollowing] = 0
 
     distance_from_edge = distance_transform_edt(mask == 0)

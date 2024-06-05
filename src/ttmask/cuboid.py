@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import einops
 import typer
@@ -14,7 +16,7 @@ def cuboid(
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cuboid.mrc"),
+    output: str = typer.Option(Path("cuboid.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2

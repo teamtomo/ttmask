@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import einops
 import typer
@@ -13,7 +15,7 @@ def cone(
     cone_base_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cone.mrc")
+    output: Path = typer.Option(Path("cone.mrc"))
 ):
     c = sidelength // 2
     center = np.array([c, c, c])
@@ -62,6 +64,6 @@ def cone(
     mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
 
 
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
 
 
