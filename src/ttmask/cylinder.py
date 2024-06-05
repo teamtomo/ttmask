@@ -4,6 +4,7 @@ import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
 from ._cli import cli
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='cylinder')
@@ -40,11 +41,6 @@ def cylinder(
         within_xy_hollowing = xy_distance < ((cylinder_radius - wall_thickness) / pixel_size)
         mask[np.logical_and(within_z_hollowing, within_xy_hollowing)] = 0
 
-    distance_from_edge = distance_transform_edt(mask == 0)
-    boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
-    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_width) * np.pi
+    mask = add_soft_edge(mask, soft_edge_width)
 
-    mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
-
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
-
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

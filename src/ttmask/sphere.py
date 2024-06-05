@@ -4,6 +4,7 @@ import einops
 import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='sphere')
@@ -34,16 +35,11 @@ def sphere(
     print('calculating which pixels are in sphere')
     idx = distance < (sphere_radius / pixel_size)
     mask[idx] = 1
-
+    
     if wall_thickness != 0:
         within_hollowing = distance < ((sphere_radius - wall_thickness) / pixel_size)
         mask[within_hollowing] = 0
+        
+    mask = add_soft_edge(mask, soft_edge_width)
 
-    distance_from_edge = distance_transform_edt(mask == 0)
-    boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
-    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_width) * np.pi
-
-    mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
-
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
-
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

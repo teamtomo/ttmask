@@ -4,6 +4,7 @@ import einops
 import typer
 from scipy.ndimage import distance_transform_edt
 import mrcfile
+from .soft_edge import add_soft_edge
 
 
 @cli.command(name='ellipsoid')
@@ -37,18 +38,14 @@ def ellipsoid(
     x_axis_length = width / (2 * pixel_size)
 
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
-            (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
+        (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
     mask[in_ellipsoid] = 1
-
+    
     if wall_thickness != 0:
         in_hollowing = (((x_magnitude) ** 2) / ((x_axis_length - wall_thickness) ** 2)) + ((y_magnitude ** 2) / ((y_axis_length - wall_thickness) ** 2)) + (
             (z_magnitude ** 2) / ((z_axis_length - wall_thickness) ** 2)) <= 1
         mask[in_hollowing] = 0
 
-    distance_from_edge = distance_transform_edt(mask == 0)
-    boundary_pixels = (distance_from_edge <= soft_edge_width) & (distance_from_edge != 0)
-    normalised_distance_from_edge = (distance_from_edge[boundary_pixels] / soft_edge_width) * np.pi
-
-    mask[boundary_pixels] = (0.5 * np.cos(normalised_distance_from_edge) + 0.5)
+    mask = add_soft_edge(mask, soft_edge_width)
 
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
