@@ -1,11 +1,11 @@
+from pathlib import Path
+
 import numpy as np
 import einops
 import typer
 import mrcfile
+
 from .soft_edge import add_soft_edge
-
-from ._cli import cli
-
 from ._cli import cli
 
 
@@ -17,7 +17,7 @@ def ellipsoid(
     depth: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("ellipsoid.mrc"),
+    output: Path = typer.Option(Path("ellipsoid.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
     c = sidelength // 2

@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from ._cli import cli
 import numpy as np
 import einops
 import typer
@@ -13,7 +16,7 @@ def sphere(
     sphere_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("sphere.mrc"),
+    output: Path = typer.Option(Path("sphere.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
     sphere_radius = sphere_diameter / 2

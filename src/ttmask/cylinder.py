@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import einops
 import typer
@@ -15,7 +17,7 @@ def cylinder(
     wall_thickness: float = typer.Option(0),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(...),
-    output: str = typer.Option("cylinder.mrc")
+    output: Path = typer.Option(Path("cylinder.mrc"))
 ):
     cylinder_radius = cylinder_diameter / 2
 
