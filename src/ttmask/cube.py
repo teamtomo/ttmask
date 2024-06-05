@@ -1,10 +1,10 @@
 import numpy as np
 import einops
 import typer
-from ._cli import cli
-from scipy.ndimage import distance_transform_edt
 import mrcfile
+
 from .soft_edge import add_soft_edge
+from ._cli import cli
 
 
 @cli.command(name='cube')
@@ -33,10 +33,11 @@ def cube(
 
     in_cube = np.all(difference < np.array(cube_sidelength) / (pixel_size * 2), axis=-1)
     mask[in_cube] = 1
-    
+
     if wall_thickness != 0:
-        within_hollowing = np.all(difference < ((np.array(cube_sidelength) / (pixel_size * 2)) - wall_thickness), axis=-1)
+        within_hollowing = np.all(difference < ((np.array(cube_sidelength) / (pixel_size * 2)) - wall_thickness),
+                                  axis=-1)
         mask[within_hollowing] = 0
-        
+
     mask = add_soft_edge(mask, soft_edge_width)
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

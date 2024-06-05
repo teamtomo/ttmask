@@ -2,11 +2,13 @@ import numpy as np
 import einops
 import typer
 from typing import Tuple
-from ._cli import cli
 from typing_extensions import Annotated
-from scipy.ndimage import distance_transform_edt
 import mrcfile
 from .soft_edge import add_soft_edge
+
+from ._cli import cli
+
+from ._cli import cli
 
 
 @cli.command(name='cuboid')
