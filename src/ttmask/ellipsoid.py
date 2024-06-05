@@ -6,6 +6,8 @@ from .soft_edge import add_soft_edge
 
 from ._cli import cli
 
+from ._cli import cli
+
 
 @cli.command(name='ellipsoid')
 def ellipsoid(
