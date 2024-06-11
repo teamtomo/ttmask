@@ -16,7 +16,7 @@ def cylinder(
     cylinder_diameter: float = typer.Option(...),
     wall_thickness: float = typer.Option(0),
     soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cylinder.mrc"))
 ):
     cylinder_radius = cylinder_diameter / 2

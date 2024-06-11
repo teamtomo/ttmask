@@ -14,7 +14,7 @@ def cube(
     sidelength: int = typer.Option(...),
     cube_sidelength: float = typer.Option(...),
     soft_edge_width: float = typer.Option(0),
-    pixel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cube.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
