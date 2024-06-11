@@ -18,7 +18,7 @@ def cuboid(
     sidelength: int = typer.Option(...),
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
     soft_edge_width: float = typer.Option(0),
-    pixel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(1),
     output: str = typer.Option(Path("cuboid.mrc")),
     wall_thickness: float = typer.Option(0),
 ):

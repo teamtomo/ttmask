@@ -15,7 +15,7 @@ def cone(
     cone_height: float = typer.Option(...),
     cone_base_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cone.mrc"))
 ):
     c = sidelength // 2

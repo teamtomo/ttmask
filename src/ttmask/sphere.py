@@ -15,7 +15,7 @@ def sphere(
     sidelength: int = typer.Option(...),
     sphere_diameter: float = typer.Option(...),
     soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(...),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("sphere.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
