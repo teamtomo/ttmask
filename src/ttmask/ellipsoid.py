@@ -4,6 +4,8 @@ import numpy as np
 import einops
 import typer
 import mrcfile
+from typing import Tuple
+from typing_extensions import Annotated
 
 from .soft_edge import add_soft_edge
 from ._cli import cli
@@ -11,10 +13,9 @@ from ._cli import cli
 
 @cli.command(name='ellipsoid')
 def ellipsoid(
+
     sidelength: int = typer.Option(...),
-    width: float = typer.Option(...),
-    height: float = typer.Option(...),
-    depth: float = typer.Option(...),
+    ellipsoid_dimensions: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("ellipsoid.mrc")),
@@ -35,9 +36,9 @@ def ellipsoid(
     y_magnitude = difference[:, :, :, 1]
     z_magnitude = difference[:, :, :, 0]
 
-    z_axis_length = depth / (2 * pixel_size)
-    y_axis_length = height / (2 * pixel_size)
-    x_axis_length = width / (2 * pixel_size)
+    z_axis_length = ellipsoid_dimensions[0] / (2 * pixel_size)
+    y_axis_length = ellipsoid_dimensions[1] / (2 * pixel_size)
+    x_axis_length = ellipsoid_dimensions[2] / (2 * pixel_size)
 
     in_ellipsoid = (((x_magnitude) ** 2) / (x_axis_length ** 2)) + ((y_magnitude ** 2) / (y_axis_length ** 2)) + (
         (z_magnitude ** 2) / (z_axis_length ** 2)) <= 1
