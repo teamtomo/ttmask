@@ -17,4 +17,5 @@ from .cube import cube
 from .cone import cone
 from .ellipsoid import ellipsoid
 from .map2mask import map2mask
+from .tube import tube
 
