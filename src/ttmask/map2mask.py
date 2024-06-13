@@ -2,8 +2,8 @@ import mrcfile
 import numpy as np
 import typer
 from pathlib import Path
-from ._cli import cli
 
+from ._cli import cli
 from .soft_edge import add_soft_edge
 
 @cli.command(name='map2mask')
