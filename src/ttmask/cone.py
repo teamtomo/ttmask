@@ -7,6 +7,7 @@ import mrcfile
 
 from ._cli import cli
 from .soft_edge import add_soft_edge
+from .box_setup import box_setup
 
 
 @cli.command(name='cone')
@@ -18,30 +19,23 @@ def cone(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cone.mrc"))
 ):
-    c = sidelength // 2
-    center = np.array([c, c, c])
-    mask = np.zeros(shape=(sidelength, sidelength, sidelength), dtype=np.float32)
-
-    # 3d positions of all voxels
-    positions = np.indices([sidelength, sidelength, sidelength])
-    positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
-
-    centered = positions - center  # pixels relative to center point
-    magnitudes = np.linalg.norm(centered, axis=-1)
-
+    # establish our coordinate system and empty mask
+    coordinates_centered, mask = box_setup(sidelength)
+    # distances between each pixel and center :
+    magnitudes = np.linalg.norm(coordinates_centered, axis=-1)
     magnitudes = einops.rearrange(magnitudes, 'd h w -> d h w 1')
 
     # Check for zeros in magnitudes and replace them with a small value to avoid Nan warning
     near_zero = 1e-8
     magnitudes = np.where(magnitudes == 0, near_zero, magnitudes)
-    normalised = centered / magnitudes
+    normalised = coordinates_centered / magnitudes
 
     principal_axis = np.array([1, 0, 0])
     dot_product = np.dot(normalised, principal_axis)
     angles_radians = np.arccos(dot_product)
     angles = np.rad2deg(angles_radians)
 
-    z_distance = centered[:, :, :, 0]  # (100, 100, 100)
+    z_distance = coordinates_centered[:, :, :, 0]  # (100, 100, 100)
 
     # Calculate the angle from the tip of the cone to the edge of the base
     cone_base_radius = (cone_base_diameter / 2) / pixel_size
