@@ -1,16 +1,14 @@
 from pathlib import Path
 
 import numpy as np
-import einops
 import typer
 from typing import Tuple
 from typing_extensions import Annotated
 import mrcfile
+
+from ._cli import cli
 from .soft_edge import add_soft_edge
-
-from ._cli import cli
-
-from ._cli import cli
+from .box_setup import box_setup
 
 
 @cli.command(name='cuboid')
@@ -22,38 +20,23 @@ def cuboid(
     output: str = typer.Option(Path("cuboid.mrc")),
     wall_thickness: float = typer.Option(0),
 ):
-    c = sidelength // 2
-    center = np.array([c, c, c])
-    mask = np.zeros(shape=(sidelength, sidelength, sidelength), dtype=np.float32)
+    # establish our coordinate system and empty mask
+    coordinates_centered, mask = box_setup(sidelength)
+    #converting relative coordinates to xyz distances (i.e. not a negative number) :
+    xyz_distances = np.abs(coordinates_centered)
 
-    # 3d positions of all voxels
-    positions = np.indices([sidelength, sidelength, sidelength])
-    positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
-
-    # calculate the distance between the center and every pixel position
-    print(center.shape)
-    print(positions.shape)
-
-    print('calculating distance')
-    difference = np.abs(positions - center)  # (100, 100, 100, 3)
-    # z = difference[:, :, :, 0]
-    # y = difference[:, :, :, 1]
-    # x = difference[:, :, :, 2]
-    # idx_z = z < cuboid_sidelengths[0] / 2
-    # idx_y = y < cuboid_sidelengths[1] / 2
-    # idx_x = x < cuboid_sidelengths[2] / 2
-
-    # mask[np.logical_not(idx)] = 1 #if you wanted to do opposite for whatever reason
-
-    inside_cuboid = np.all(difference < (np.array(cuboid_sidelengths) / (2 * pixel_size)), axis=-1)
-
+    # set up criteria for which pixels are inside the cuboid and modify values to 1.
+    inside_cuboid = np.all(xyz_distances < (np.array(cuboid_sidelengths) / (2 * pixel_size)), axis=-1)
     mask[inside_cuboid] = 1
-       
+
+    # if requested, criteria set up for pixels within the hollowed area and these values changed to zero
     if wall_thickness != 0:
-        within_hollowing = np.all(difference < ((np.array(cuboid_sidelengths) / (2 * pixel_size)) - wall_thickness), axis=-1)
+        within_hollowing = np.all(xyz_distances < ((np.array(cuboid_sidelengths) / (2 * pixel_size)) - wall_thickness),
+                                  axis=-1)
         mask[within_hollowing] = 0
-  
+
+    # if requested, a soft edge is added to the mask
     mask = add_soft_edge(mask, soft_edge_width)
 
-    mrcfile.write(output, mask, voxel_size= pixel_size, overwrite=True)
-
+    # output created with desired pixel size.
+    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)

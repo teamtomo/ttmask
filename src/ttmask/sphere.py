@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from ._cli import cli
+
 import numpy as np
-import einops
 import typer
 import mrcfile
 
-from .soft_edge import add_soft_edge
 from ._cli import cli
+from .soft_edge import add_soft_edge
+from .box_setup import box_setup
 
 
 @cli.command(name='sphere')
@@ -20,29 +20,24 @@ def sphere(
     wall_thickness: float = typer.Option(0),
 ):
     sphere_radius = sphere_diameter / 2
-    c = sidelength // 2
-    center = np.array([c, c, c])
-    mask = np.zeros(shape=(sidelength, sidelength, sidelength), dtype=np.float32)
 
-    print(mask.dtype)
+    # establish our coordinate system and empty mask
+    coordinates_centered, mask = box_setup(sidelength)
 
-    # 2d positions of all pixels
-    positions = np.indices([sidelength, sidelength, sidelength])
-    positions = einops.rearrange(positions, 'zyx d h w -> d h w zyx')
+    #determine distances of each pixel to the center
+    distance_to_center = np.linalg.norm(coordinates_centered)
 
-    print('calculating distance')
-    difference = np.abs(positions - center)  # (100, 100, 100, 3)
-    distance = np.sum(difference ** 2, axis=-1) ** 0.5
+    # set up criteria for which pixels are inside the sphere and modify values to 1.
+    inside_sphere = distance_to_center < (sphere_radius / pixel_size)
+    mask[inside_sphere] = 1
 
-    # calculate whether each pixel is inside or outside the circle
-    print('calculating which pixels are in sphere')
-    idx = distance < (sphere_radius / pixel_size)
-    mask[idx] = 1
-
+    # if requested, criteria set up for pixels within the hollowed area and these values changed to zero
     if wall_thickness != 0:
-        within_hollowing = distance < ((sphere_radius - wall_thickness) / pixel_size)
+        within_hollowing = distance_to_center < ((sphere_radius - wall_thickness) / pixel_size)
         mask[within_hollowing] = 0
 
+    # if requested, a soft edge is added to the mask
     mask = add_soft_edge(mask, soft_edge_width)
 
+    # output created with desired pixel size.
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
