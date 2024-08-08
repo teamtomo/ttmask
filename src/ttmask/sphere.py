@@ -6,8 +6,8 @@ import typer
 import mrcfile
 
 from ._cli import cli
-from .soft_edge import add_soft_edge
-from .box_setup import box_setup
+from soft_edge import add_soft_edge
+from box_setup import box_setup
 
 
 @cli.command(name='sphere')
@@ -25,7 +25,7 @@ def sphere(
     coordinates_centered, mask = box_setup(sidelength)
 
     #determine distances of each pixel to the center
-    distance_to_center = np.linalg.norm(coordinates_centered)
+    distance_to_center = np.linalg.norm(coordinates_centered, axis=-1)
 
     # set up criteria for which pixels are inside the sphere and modify values to 1.
     inside_sphere = distance_to_center < (sphere_radius / pixel_size)
