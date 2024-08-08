@@ -5,12 +5,12 @@ import numpy as np
 import typer
 import mrcfile
 
-#from ._cli import cli
+from ._cli import cli
 from soft_edge import add_soft_edge
 from box_setup import box_setup
 
 
-#@cli.command(name='sphere')
+@cli.command(name='sphere')
 def sphere(
     sidelength: int = typer.Option(...),
     sphere_diameter: float = typer.Option(...),
@@ -41,5 +41,3 @@ def sphere(
 
     # output created with desired pixel size.
     mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
-
-sphere(100,30,0,1,"sphere.mrc",0)
