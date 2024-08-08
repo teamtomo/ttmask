@@ -9,7 +9,6 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-
 @cli.command(name='sphere')
 def sphere(
     sidelength: int = typer.Option(...),
