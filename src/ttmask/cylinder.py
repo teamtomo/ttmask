@@ -5,20 +5,18 @@ import typer
 import mrcfile
 
 from ._cli import cli
+
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-
-@cli.command(name='cylinder')
 def cylinder(
-    sidelength: int = typer.Option(...),
-    cylinder_height: float = typer.Option(...),
-    cylinder_diameter: float = typer.Option(...),
-    wall_thickness: float = typer.Option(0),
-    soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(1),
-    output: Path = typer.Option(Path("cylinder.mrc"))
-):
+        sidelength: int, 
+        cylinder_height: float, 
+        cylinder_diameter: float, 
+        wall_thickness: float, 
+        soft_edge_width: int,
+        pixel_size: float
+) -> np.ndarray:
     cylinder_radius = cylinder_diameter / 2
 
     # establish our coordinate system and empty mask
@@ -43,5 +41,21 @@ def cylinder(
     # if requested, a soft edge is added to the mask
     mask = add_soft_edge(mask, soft_edge_width)
 
-    # output created with desired pixel size.
-    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
+    return mask
+
+
+@cli.command(name='cylinder')
+def cylinder_cli(
+    sidelength: int = typer.Option(...),
+    cylinder_height: float = typer.Option(...),
+    cylinder_diameter: float = typer.Option(...),
+    wall_thickness: float = typer.Option(0),
+    soft_edge_width: int = typer.Option(0),
+    pixel_size: float = typer.Option(1),
+    output: Path = typer.Option(Path("cylinder.mrc")),
+):
+    mask = cylinder(sidelength, cylinder_height, cylinder_diameter, wall_thickness, soft_edge_width, pixel_size)
+
+    # Save the mask to an MRC file
+    with mrcfile.new(output, overwrite=True) as mrc:
+        mrc.set_data(mask.astype(np.float32))
