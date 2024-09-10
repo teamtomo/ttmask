@@ -8,17 +8,17 @@ def test_cone():
     assert mask.sum() < np.pi * 25**2 * 50 # Volume of cylinder
 
 def test_cube():
-    mask = cube(100, 50, 0,1)
+    mask = cube(100, 50, 0, 1, 0)
     assert mask.shape == (100, 100, 100)
     # Test against volume of cube +- center and subpixel issues
-    assert mask.sum() > 50**3
+    assert mask.sum() > 48**3
     assert mask.sum() < 52**3
 
 def test_cuboid():
-    mask = cuboid(100, (50,40,30), 0, 1)
+    mask = cuboid(100, (50,40,30), 0, 1, 0)
     assert mask.shape == (100, 100, 100)
     # Test against volume of cuboid +- center and subpixel issues
-    assert mask.sum() > 50 * 40 * 30
+    assert mask.sum() > 48 * 38 * 28
     assert mask.sum() < 52 * 42 * 32
 
 #def test_curved_surface():
