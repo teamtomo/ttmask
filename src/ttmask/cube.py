@@ -7,11 +7,12 @@ from .soft_edge import add_soft_edge
 from ._cli import cli
 from .box_setup import box_setup
 
-def cube(sidelength: int, 
-         cube_sidelength: float, 
-         soft_edge_width: float, 
-         pixel_size: float,
-         wall_thickness: float
+def cube(
+    sidelength: int, 
+    cube_sidelength: float, 
+    soft_edge_width: float, 
+    pixel_size: float,
+    wall_thickness: float
 ) -> np.ndarray:
      # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength)
