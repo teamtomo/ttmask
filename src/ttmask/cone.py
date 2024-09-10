@@ -8,7 +8,12 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-def cone(sidelength: int, cone_height: float, cone_base_diameter: float, soft_edge_width: int, pixel_size: float) -> np.ndarray:
+def cone(sidelength: int, 
+         cone_height: float, 
+         cone_base_diameter: float, 
+         soft_edge_width: int, 
+         pixel_size: float
+) -> np.ndarray:
     # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength)
     # distances between each pixel and center :
