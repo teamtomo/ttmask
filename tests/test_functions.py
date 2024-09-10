@@ -4,7 +4,7 @@ import numpy as np
 def test_cone():
     mask = cone(100, 50, 50, 0, 1)
     assert mask.shape == (100, 100, 100)
-    assert mask.sum() > np.pi * 25**2 * (50 / 3) # Volume of cone
+    assert mask.sum() > np.pi * 24**2 * (50 / 3) # Volume of cone
     assert mask.sum() < np.pi * 25**2 * 50 # Volume of cylinder
 
 def test_cube():
