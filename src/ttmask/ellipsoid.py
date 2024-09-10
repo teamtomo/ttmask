@@ -10,11 +10,13 @@ from .soft_edge import add_soft_edge
 from ._cli import cli
 from .box_setup import box_setup
 
-def ellipsoid(sidelength: int, 
-              ellipsoid_dimensions: Tuple[float, float, float], 
-              soft_edge_width: float,
-              pixel_size: float,
-              wall_thickness: float) -> np.ndarray:
+def ellipsoid(
+    sidelength: int, 
+    ellipsoid_dimensions: Tuple[float, float, float], 
+    soft_edge_width: float,
+    pixel_size: float,
+    wall_thickness: float
+) -> np.ndarray:
     # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :

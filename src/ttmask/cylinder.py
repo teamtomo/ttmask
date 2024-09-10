@@ -10,12 +10,12 @@ from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
 def cylinder(
-        sidelength: int, 
-        cylinder_height: float, 
-        cylinder_diameter: float, 
-        wall_thickness: float, 
-        soft_edge_width: int,
-        pixel_size: float
+    sidelength: int, 
+    cylinder_height: float, 
+    cylinder_diameter: float, 
+    wall_thickness: float, 
+    soft_edge_width: int,
+    pixel_size: float
 ) -> np.ndarray:
     cylinder_radius = cylinder_diameter / 2
 

@@ -7,17 +7,21 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .add_padding import add_padding
 
-def mask_from_map(data: np.ndarray, binarization_threshold: float, soft_edge_width: int, padding_width: int) -> np.ndarray:
+def mask_from_map(
+    map_data: np.ndarray, 
+    binarization_threshold: float, 
+    soft_edge_width: int, 
+    padding_width: int
+) -> np.ndarray:
 
-    # Binarize the map
-    mask = (data > binarization_threshold).astype(np.float32)
+    above_threshold = map_data >= binarization_threshold
+    below_threshold = map_data < binarization_threshold
 
-    # Add padding if specified
-    if padding_width > 0:
-        mask = add_padding(mask, padding_width)
+    map_data[above_threshold] = 1
+    map_data[below_threshold] = 0
 
-    # Add a soft edge to the mask
-    mask = add_soft_edge(mask, soft_edge_width)
+    padded_mask = add_padding(map_data, padding_width)
+    mask = add_soft_edge(padded_mask, soft_edge_width)
 
     return mask
 

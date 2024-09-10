@@ -7,7 +7,13 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-def sphere(sidelength: int, sphere_diameter: float, soft_edge_width: int, pixel_size: float, wall_thickness: float) -> np.ndarray:
+def sphere(
+    sidelength: int, 
+    sphere_diameter: float, 
+    soft_edge_width: int, 
+    pixel_size: float, 
+    wall_thickness: float
+) -> np.ndarray:
     sphere_radius = sphere_diameter / 2
 
     # establish our coordinate system and empty mask

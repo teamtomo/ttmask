@@ -8,13 +8,14 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-def tube(sidelength: int, 
-         tube_height: float, 
-         tube_diameter: float, 
-         wall_thickness: float,
-         soft_edge_width: int,
-         pixel_size: float,
-         ) -> np.ndarray:
+def tube(
+    sidelength: int, 
+    tube_height: float, 
+    tube_diameter: float, 
+    wall_thickness: float,
+    soft_edge_width: int,
+    pixel_size: float,
+) -> np.ndarray:
     tube_radius = tube_diameter / 2
 
     # establish our coordinate system and empty mask
