@@ -1,5 +1,4 @@
 from pathlib import Path
-
 import numpy as np
 import einops
 import typer
@@ -9,16 +8,13 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
-
-@cli.command(name='cone')
 def cone(
-    sidelength: int = typer.Option(...),
-    cone_height: float = typer.Option(...),
-    cone_base_diameter: float = typer.Option(...),
-    soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(1),
-    output: Path = typer.Option(Path("cone.mrc"))
-):
+    sidelength: int, 
+    cone_height: float, 
+    cone_base_diameter: float, 
+    soft_edge_width: int, 
+    pixel_size: float
+) -> np.ndarray:
     # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength)
     # distances between each pixel and center :
@@ -55,4 +51,19 @@ def cone(
     mask = np.roll(mask, z_shift, axis=0)
     mask = add_soft_edge(mask, soft_edge_width)
 
-    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
+    return mask
+
+@cli.command(name='cone')
+def cone_cli(
+    sidelength: int = typer.Option(...),
+    cone_height: float = typer.Option(...),
+    cone_base_diameter: float = typer.Option(...),
+    soft_edge_width: int = typer.Option(0),
+    pixel_size: float = typer.Option(1),
+    output: Path = typer.Option(Path("cone.mrc")),
+):
+    mask = cone(sidelength, cone_height, cone_base_diameter, soft_edge_width, pixel_size)
+
+    # Save the mask to an MRC file
+    with mrcfile.new(output, overwrite=True) as mrc:
+        mrc.set_data(mask.astype(np.float32))

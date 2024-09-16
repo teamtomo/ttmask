@@ -7,18 +7,12 @@ from ._cli import cli
 from .soft_edge import add_soft_edge
 from .add_padding import add_padding
 
-@cli.command(name='map2mask')
-def map2mask(
-
-    input_map: Path = typer.Option(Path("map.mrc")),
-    binarization_threshold: float = typer.Option(...),
-    output_mask: Path = typer.Option(Path("mask.mrc")),
-    pixel_size: float = typer.Option(...),
-    soft_edge_width: int = typer.Option(0),
-    padding_width: int = typer.Option(0),
-):
-    with mrcfile.open(input_map) as mrc:
-        map_data = np.array(mrc.data)
+def mask_from_map(
+    map_data: np.ndarray, 
+    binarization_threshold: float, 
+    soft_edge_width: int, 
+    padding_width: int
+) -> np.ndarray:
 
     above_threshold = map_data >= binarization_threshold
     below_threshold = map_data < binarization_threshold
@@ -29,4 +23,21 @@ def map2mask(
     padded_mask = add_padding(map_data, padding_width)
     mask = add_soft_edge(padded_mask, soft_edge_width)
 
-    mrcfile.write(output_mask, mask, voxel_size=pixel_size, overwrite=True)
+    return mask
+
+@cli.command(name='map2mask')
+def map2mask(
+    input_map: Path = typer.Option(Path("map.mrc")),
+    binarization_threshold: float = typer.Option(...),
+    output_mask: Path = typer.Option(Path("mask.mrc")),
+    pixel_size: float = typer.Option(...),
+    soft_edge_width: int = typer.Option(0),
+    padding_width: int = typer.Option(0),
+):
+    with mrcfile.open(input_map, permissive=True) as mrc:
+        data = mrc.data
+    mask = mask_from_map(data, binarization_threshold, soft_edge_width, padding_width)
+
+    # Save the mask to an MRC file
+    with mrcfile.new(output_mask, overwrite=True) as mrc:
+        mrc.set_data(mask.astype(np.float32))

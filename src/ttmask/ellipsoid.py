@@ -10,17 +10,13 @@ from .soft_edge import add_soft_edge
 from ._cli import cli
 from .box_setup import box_setup
 
-
-@cli.command(name='ellipsoid')
 def ellipsoid(
-
-    sidelength: int = typer.Option(...),
-    ellipsoid_dimensions: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
-    soft_edge_width: int = typer.Option(0),
-    pixel_size: float = typer.Option(1),
-    output: Path = typer.Option(Path("ellipsoid.mrc")),
-    wall_thickness: float = typer.Option(0),
-):
+    sidelength: int, 
+    ellipsoid_dimensions: Tuple[float, float, float], 
+    soft_edge_width: float,
+    pixel_size: float,
+    wall_thickness: float
+) -> np.ndarray:
     # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
@@ -51,5 +47,18 @@ def ellipsoid(
     # if requested, a soft edge is added to the mask
     mask = add_soft_edge(mask, soft_edge_width)
 
-    # output created with desired pixel size.
-    mrcfile.write(output, mask, voxel_size=pixel_size, overwrite=True)
+    return mask
+
+@cli.command(name='ellipsoid')
+def ellipsoid_cli(
+    sidelength: int = typer.Option(...),
+    ellipsoid_dimensions: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
+    soft_edge_width: float = typer.Option(0),
+    pixel_size: float = typer.Option(1),
+    output: Path = typer.Option(Path("ellipsoid.mrc")),
+):
+    mask = ellipsoid(sidelength, ellipsoid_dimensions, soft_edge_width, pixel_size)
+
+    # Save the mask to an MRC file
+    with mrcfile.new(output, overwrite=True) as mrc:
+        mrc.set_data(mask.astype(np.float32))
