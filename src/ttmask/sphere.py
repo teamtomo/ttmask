@@ -12,12 +12,13 @@ def sphere(
     sphere_diameter: float, 
     soft_edge_width: int, 
     pixel_size: float, 
-    wall_thickness: float
+    wall_thickness: float,
+    centering: str
 ) -> np.ndarray:
     sphere_radius = sphere_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
 
     # determine distances of each pixel to the center
     distance_to_center = np.linalg.norm(coordinates_centered, axis=-1)
@@ -44,8 +45,9 @@ def sphere_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("sphere.mrc")),
     wall_thickness: float = typer.Option(0),
+    centering: str = typer.Option("standard"),
 ):
-    mask = sphere(sidelength, sphere_diameter, soft_edge_width, pixel_size, wall_thickness)
+    mask = sphere(sidelength, sphere_diameter, soft_edge_width, pixel_size, wall_thickness, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

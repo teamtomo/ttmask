@@ -13,10 +13,11 @@ def cone(
     cone_height: float, 
     cone_base_diameter: float, 
     soft_edge_width: int, 
-    pixel_size: float
+    pixel_size: float,
+    centering: str
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     # distances between each pixel and center :
     magnitudes = np.linalg.norm(coordinates_centered, axis=-1)
     magnitudes = einops.rearrange(magnitudes, 'd h w -> d h w 1')
@@ -61,8 +62,9 @@ def cone_cli(
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cone.mrc")),
+    centering: str = typer.Option("standard"),
 ):
-    mask = cone(sidelength, cone_height, cone_base_diameter, soft_edge_width, pixel_size)
+    mask = cone(sidelength, cone_height, cone_base_diameter, soft_edge_width, pixel_size, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
