@@ -12,7 +12,7 @@ def cone(
     sidelength: int, 
     cone_height: float, 
     cone_base_diameter: float, 
-    soft_edge_width: int, 
+    soft_edge_width: int,
     pixel_size: float,
     centering: str
 ) -> np.ndarray:
@@ -69,3 +69,4 @@ def cone_cli(
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size

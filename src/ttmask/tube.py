@@ -46,11 +46,14 @@ def tube_cli(
     tube_height: float = typer.Option(...),
     tube_diameter: float = typer.Option(...),
     wall_thickness: float = typer.Option(0),
+    soft_edge_width: int = typer.Option(0),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("tube.mrc")),
     centering: str = typer.Option("standard"),
 ):
-    mask = tube(sidelength, tube_height, tube_diameter, wall_thickness, centering)
+    mask = tube(sidelength, tube_height, tube_diameter, wall_thickness, soft_edge_width, pixel_size, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size

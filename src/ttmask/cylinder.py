@@ -61,3 +61,4 @@ def cylinder_cli(
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size

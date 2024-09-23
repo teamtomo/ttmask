@@ -9,9 +9,9 @@ from .add_padding import add_padding
 
 def mask_from_map(
     map_data: np.ndarray, 
-    binarization_threshold: float, 
-    soft_edge_width: int, 
-    padding_width: int
+    binarization_threshold: float,
+    padding_width: int,
+    soft_edge_width: int
 ) -> np.ndarray:
 
     above_threshold = map_data >= binarization_threshold
@@ -29,15 +29,15 @@ def mask_from_map(
 def map2mask(
     input_map: Path = typer.Option(Path("map.mrc")),
     binarization_threshold: float = typer.Option(...),
-    output_mask: Path = typer.Option(Path("mask.mrc")),
-    pixel_size: float = typer.Option(...),
-    soft_edge_width: int = typer.Option(0),
     padding_width: int = typer.Option(0),
+    soft_edge_width: int = typer.Option(0),
+    pixel_size: float = typer.Option(...),
+    output_mask: Path = typer.Option(Path("mask.mrc")),
 ):
     with mrcfile.open(input_map, permissive=True) as mrc:
         data = mrc.data
-    mask = mask_from_map(data, binarization_threshold, soft_edge_width, padding_width)
+    mask = mask_from_map(data, binarization_threshold, padding_width, soft_edge_width)
 
-    # Save the mask to an MRC file
     with mrcfile.new(output_mask, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size
