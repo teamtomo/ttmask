@@ -15,11 +15,12 @@ def tube(
     wall_thickness: float,
     soft_edge_width: int,
     pixel_size: float,
+    centering: str
 ) -> np.ndarray:
     tube_radius = tube_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -46,8 +47,9 @@ def tube_cli(
     tube_diameter: float = typer.Option(...),
     wall_thickness: float = typer.Option(0),
     output: Path = typer.Option(Path("tube.mrc")),
+    centering: str = typer.Option("standard"),
 ):
-    mask = tube(sidelength, tube_height, tube_diameter, wall_thickness)
+    mask = tube(sidelength, tube_height, tube_diameter, wall_thickness, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

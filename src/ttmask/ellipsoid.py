@@ -15,10 +15,11 @@ def ellipsoid(
     ellipsoid_dimensions: Tuple[float, float, float], 
     soft_edge_width: float,
     pixel_size: float,
-    wall_thickness: float
+    wall_thickness: float,
+    centering: str
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -56,8 +57,9 @@ def ellipsoid_cli(
     soft_edge_width: float = typer.Option(0),
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("ellipsoid.mrc")),
+    centering: str = typer.Option("standard"),
 ):
-    mask = ellipsoid(sidelength, ellipsoid_dimensions, soft_edge_width, pixel_size)
+    mask = ellipsoid(sidelength, ellipsoid_dimensions, soft_edge_width, pixel_size, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

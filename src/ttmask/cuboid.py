@@ -14,10 +14,11 @@ def cuboid(
     cuboid_sidelengths: Tuple[float, float, float], 
     soft_edge_width: float, 
     pixel_size: float,
-    wall_thickness: float
+    wall_thickness: float,
+    centering: str
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -44,8 +45,9 @@ def cuboid_cli(
     pixel_size: float = typer.Option(1),
     wall_thickness: float = typer.Option(0),
     output: Path = typer.Option(Path("cuboid.mrc")),
+    centering: str = typer.Option("standard"),
 ):
-    mask = cuboid(sidelength, cuboid_sidelengths, soft_edge_width, pixel_size,wall_thickness)
+    mask = cuboid(sidelength, cuboid_sidelengths, soft_edge_width, pixel_size,wall_thickness, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
