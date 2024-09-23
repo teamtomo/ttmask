@@ -15,13 +15,12 @@ def cylinder(
     cylinder_diameter: float, 
     wall_thickness: float, 
     soft_edge_width: int,
-    pixel_size: float,
-    centering: str
+    pixel_size: float
 ) -> np.ndarray:
     cylinder_radius = cylinder_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask = box_setup(sidelength)
 
     # converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
@@ -54,9 +53,8 @@ def cylinder_cli(
     soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cylinder.mrc")),
-    centering: str = typer.Option("standard"),
 ):
-    mask = cylinder(sidelength, cylinder_height, cylinder_diameter, wall_thickness, soft_edge_width, pixel_size, centering)
+    mask = cylinder(sidelength, cylinder_height, cylinder_diameter, wall_thickness, soft_edge_width, pixel_size)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

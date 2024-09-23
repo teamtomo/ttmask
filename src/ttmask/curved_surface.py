@@ -12,13 +12,12 @@ def curved_surface(
     fit_sphere_diameter: float, 
     soft_edge_width: int, 
     pixel_size: float,
-    surface_thickness: float,
-    centering: str
+    surface_thickness: float 
 ) -> np.ndarray:
     sphere_radius = fit_sphere_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask = box_setup(sidelength)
     coordinates_shifted = coordinates_centered - ([0, sphere_radius, 0])
 
 
@@ -48,9 +47,8 @@ def curved_surface_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("curved_surface.mrc")),
     surface_thickness: float = typer.Option(...),
-    centering: str = typer.Option("standard"),
 ):
-    mask = curved_surface(sidelength, fit_sphere_diameter, soft_edge_width, pixel_size, surface_thickness, centering)
+    mask = curved_surface(sidelength, fit_sphere_diameter, soft_edge_width, pixel_size, surface_thickness)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
