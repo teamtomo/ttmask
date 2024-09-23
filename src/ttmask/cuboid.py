@@ -11,13 +11,14 @@ from .box_setup import box_setup
 
 def cuboid(
     sidelength: int, 
-    cuboid_sidelengths: Tuple[float, float, float], 
-    soft_edge_width: float, 
+    cuboid_sidelengths: Tuple[float, float, float],
+    wall_thickness: float,
+    soft_edge_width: int,
     pixel_size: float,
-    wall_thickness: float
+    centering: str
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -40,13 +41,15 @@ def cuboid(
 def cuboid_cli(
     sidelength: int = typer.Option(...),
     cuboid_sidelengths: Annotated[Tuple[float, float, float], typer.Option()] = (None, None, None),
-    soft_edge_width: float = typer.Option(0),
-    pixel_size: float = typer.Option(1),
     wall_thickness: float = typer.Option(0),
+    soft_edge_width: int = typer.Option(0),
+    pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cuboid.mrc")),
+    centering: str = typer.Option("standard"),
 ):
-    mask = cuboid(sidelength, cuboid_sidelengths, soft_edge_width, pixel_size,wall_thickness)
+    mask = cuboid(sidelength, cuboid_sidelengths, wall_thickness, soft_edge_width, pixel_size, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size

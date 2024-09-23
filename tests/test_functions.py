@@ -8,14 +8,14 @@ def test_cone():
     assert mask.sum() < np.pi * 25**2 * 50 # Volume of cylinder
 
 def test_cube():
-    mask = cube(100, 50, 0, 1, 0, "standard")
+    mask = cube(100, 50, 0, 0, 1, "standard")
     assert mask.shape == (100, 100, 100)
     # Test against volume of cube +- center and subpixel issues
     assert mask.sum() > 48**3
     assert mask.sum() < 52**3
 
 def test_cuboid():
-    mask = cuboid(100, (50,40,30), 0, 1, 0, "standard")
+    mask = cuboid(100, (50,40,30), 0, 0, 1, "standard")
     assert mask.shape == (100, 100, 100)
     # Test against volume of cuboid +- center and subpixel issues
     assert mask.sum() > 48 * 38 * 28
@@ -34,14 +34,14 @@ def test_cylinder():
     assert mask.sum() < np.pi * 25**2 * 51 # Volume of cylinder
 
 def test_ellipsoid():
-    mask = ellipsoid(100, (50,40,30), 0, 1,0, "standard")
+    mask = ellipsoid(100, (50,40,30), 0, 0, 1, "standard")
     assert mask.shape == (100, 100, 100)
     # Test against volume of ellipsoid +- center and subpixel issues
     assert mask.sum() > 24 * 19 * 14 * 4/3 * np.pi
     assert mask.sum() < 26 * 21 * 16 * 4/3 * np.pi
 
 def test_sphere():
-    mask = sphere(100, 50, 0, 1,0, "standard")
+    mask = sphere(100, 50, 0, 0, 1, "standard")
     assert mask.shape == (100, 100, 100)
     assert mask.sum() > 4/3 * np.pi * 24**3 # Volume of sphere
     assert mask.sum() < 4/3 * np.pi * 26**3 # Volume of sphere

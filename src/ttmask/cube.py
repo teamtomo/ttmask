@@ -9,13 +9,14 @@ from .box_setup import box_setup
 
 def cube(
     sidelength: int, 
-    cube_sidelength: float, 
-    soft_edge_width: float, 
+    cube_sidelength: float,
+    wall_thickness: float,
+    soft_edge_width: int,
     pixel_size: float,
-    wall_thickness: float
+    centering: str
 ) -> np.ndarray:
      # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength)
+    coordinates_centered, mask = box_setup(sidelength, centering)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -38,13 +39,15 @@ def cube(
 def cube_cli(
     sidelength: int = typer.Option(...),
     cube_sidelength: float = typer.Option(...),
-    soft_edge_width: float = typer.Option(0),
+    wall_thickness: float = typer.Option(0),
+    soft_edge_width: int = typer.Option(0),
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cube.mrc")),
-    wall_thickness: float = typer.Option(0),
+    centering: float = typer.Option("standard"),
 ):
-    mask = cube(sidelength, cube_sidelength, soft_edge_width, pixel_size)
+    mask = cube(sidelength, cube_sidelength, wall_thickness, soft_edge_width, pixel_size, centering)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
+        mrc.voxel_size = pixel_size
