@@ -1,4 +1,7 @@
 from pathlib import Path
+from typing import Tuple
+from typing_extensions import Annotated
+
 import numpy as np
 import einops
 import typer
@@ -14,10 +17,11 @@ def cone(
     cone_base_diameter: float, 
     soft_edge_width: int,
     pixel_size: float,
-    centering: str
+    centering: str,
+    center: tuple
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask = box_setup(sidelength, centering, center)
     # distances between each pixel and center :
     magnitudes = np.linalg.norm(coordinates_centered, axis=-1)
     magnitudes = einops.rearrange(magnitudes, 'd h w -> d h w 1')
@@ -63,8 +67,9 @@ def cone_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cone.mrc")),
     centering: str = typer.Option("standard"),
+    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50)
 ):
-    mask = cone(sidelength, cone_height, cone_base_diameter, soft_edge_width, pixel_size, centering)
+    mask = cone(sidelength, cone_height, cone_base_diameter, soft_edge_width, pixel_size, centering, center)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

@@ -1,4 +1,7 @@
 from pathlib import Path
+from typing import Tuple
+from typing_extensions import Annotated
+
 import numpy as np
 import typer
 import mrcfile
@@ -13,12 +16,13 @@ def sphere(
     wall_thickness: float,
     soft_edge_width: int,
     pixel_size: float,
-    centering: str
+    centering: str,
+    center: tuple
 ) -> np.ndarray:
     sphere_radius = sphere_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask, _ = box_setup(sidelength, centering, center)
 
     # determine distances of each pixel to the center
     distance_to_center = np.linalg.norm(coordinates_centered, axis=-1)
@@ -46,8 +50,9 @@ def sphere_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("sphere.mrc")),
     centering: str = typer.Option("standard"),
+    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50)
 ):
-    mask = sphere(sidelength, sphere_diameter, wall_thickness, soft_edge_width, pixel_size, centering)
+    mask = sphere(sidelength, sphere_diameter, wall_thickness, soft_edge_width, pixel_size, centering, center)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
