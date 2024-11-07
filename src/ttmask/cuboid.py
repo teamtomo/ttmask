@@ -1,8 +1,9 @@
 from pathlib import Path
-import numpy as np
-import typer
 from typing import Tuple
 from typing_extensions import Annotated
+
+import numpy as np
+import typer
 import mrcfile
 
 from ._cli import cli
@@ -15,10 +16,11 @@ def cuboid(
     wall_thickness: float,
     soft_edge_width: int,
     pixel_size: float,
-    centering: str
+    centering: str,
+    center: tuple
 ) -> np.ndarray:
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask = box_setup(sidelength, centering, center)
     #converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
@@ -46,8 +48,9 @@ def cuboid_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cuboid.mrc")),
     centering: str = typer.Option("standard"),
+    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50)
 ):
-    mask = cuboid(sidelength, cuboid_sidelengths, wall_thickness, soft_edge_width, pixel_size, centering)
+    mask = cuboid(sidelength, cuboid_sidelengths, wall_thickness, soft_edge_width, pixel_size, centering, center)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:

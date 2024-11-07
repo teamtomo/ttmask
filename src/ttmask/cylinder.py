@@ -1,11 +1,12 @@
 from pathlib import Path
+from typing import Tuple
+from typing_extensions import Annotated
 
 import numpy as np
 import typer
 import mrcfile
 
 from ._cli import cli
-
 from .soft_edge import add_soft_edge
 from .box_setup import box_setup
 
@@ -16,12 +17,13 @@ def cylinder(
     wall_thickness: float, 
     soft_edge_width: int,
     pixel_size: float,
-    centering: str
+    centering: str,
+    center: tuple
 ) -> np.ndarray:
     cylinder_radius = cylinder_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask = box_setup(sidelength, centering)
+    coordinates_centered, mask = box_setup(sidelength, centering, center)
 
     # converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
@@ -55,8 +57,9 @@ def cylinder_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("cylinder.mrc")),
     centering: str = typer.Option("standard"),
+    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50)
 ):
-    mask = cylinder(sidelength, cylinder_height, cylinder_diameter, wall_thickness, soft_edge_width, pixel_size, centering)
+    mask = cylinder(sidelength, cylinder_height, cylinder_diameter, wall_thickness, soft_edge_width, pixel_size, centering, center)
 
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
