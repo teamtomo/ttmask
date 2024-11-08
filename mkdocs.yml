@@ -12,14 +12,17 @@ copyright: Copyright &copy; 2022 - 2022 teamtomo
 # Custom navigation can be specified
 nav:
   - Overview: overview.md
-  - Examples:
+  - Functions:
 
-      - Cone: examples/cone.md
-      - Cube: examples/cube.md
-      - Cuboid: examples/cuboid.md
-      - Cylinder: examples/cylinder.md
-      - Ellipsoid: examples/ellipsoid.md
-      - Sphere: examples/sphere.md
+      - Cone: functions/cone.md
+      - Cube: functions/cube.md
+      - Cuboid: functions/cuboid.md
+      - Curved Surface: functions/curved_surface.md
+      - Cylinder: functions/cylinder.md
+      - Ellipsoid: functions/ellipsoid.md
+      - Map to Mask: functions/map2mask.md
+      - Sphere: functions/sphere.md
+      - Tube: functions/tube.md
 theme:
   icon:
     logo: material/cube-outline
