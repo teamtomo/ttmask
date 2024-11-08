@@ -22,7 +22,7 @@ def sphere(
     sphere_radius = sphere_diameter / 2
 
     # establish our coordinate system and empty mask
-    coordinates_centered, mask, _ = box_setup(sidelength, centering, center)
+    coordinates_centered, mask = box_setup(sidelength, centering, center)
 
     # determine distances of each pixel to the center
     distance_to_center = np.linalg.norm(coordinates_centered, axis=-1)
