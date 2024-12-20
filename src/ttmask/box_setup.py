@@ -2,7 +2,7 @@ import numpy as np
 import einops
 
 
-def box_setup(sidelength: int, centering: str, custom_center: tuple):
+def box_setup(sidelength: int, centering: str = None, custom_center: tuple = None):
     c = sidelength // 2
     if centering == "visual" and sidelength % 2 == 0:
         center = np.array([c, c, c]) - 0.5
