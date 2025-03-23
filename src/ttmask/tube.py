@@ -1,32 +1,62 @@
+"""Tube mask creation."""
+
 from pathlib import Path
 from typing import Tuple
-from typing_extensions import Annotated
 
+import mrcfile
 import numpy as np
 import typer
-import mrcfile
-
+from typing_extensions import Annotated
 
 from ._cli import cli
-from .soft_edge import add_soft_edge
 from .box_setup import box_setup
+from .soft_edge import add_soft_edge
+
 
 def tube(
-    sidelength: int, 
-    tube_height: float, 
-    tube_diameter: float, 
+    sidelength: int,
+    tube_height: float,
+    tube_diameter: float,
     wall_thickness: float,
     soft_edge_width: int,
     pixel_size: float,
     centering: str,
-    center: tuple
+    center: tuple,
 ) -> np.ndarray:
+    """Create a tube mask.
+
+    Creates a 3D mask in the shape of a tube.
+
+    Parameters
+    ----------
+    sidelength : int
+        The sidelength of the cubic mask volume in pixels
+    tube_height : float
+        The height of the tube in physical units
+    tube_diameter : float
+        The diameter of the tube in physical units
+    wall_thickness : float
+        The thickness of the tube wall in physical units
+    soft_edge_width : int
+        Width of the soft edge in pixels
+    pixel_size : float
+        Physical size of each pixel
+    centering : str
+        Method for centering the mask in the volume
+    center : tuple
+        (x,y,z) coordinates specifying the center position of the mask
+
+    Returns
+    -------
+    np.ndarray
+        3D numpy array containing the tube mask
+    """
     tube_radius = tube_diameter / 2
 
     # establish our coordinate system and empty mask
     coordinates_centered, mask = box_setup(sidelength, centering, center)
 
-    #converting relative coordinates to xyz distances (i.e. not a negative number) :
+    # converting relative coordinates to xyz distances (i.e. not a negative number) :
     xyz_distances = np.abs(coordinates_centered)
 
     # set up criteria for which pixels are inside the tube and modify values to 1.
@@ -35,9 +65,12 @@ def tube(
     within_xy = xy_distance < (tube_radius / pixel_size)
     mask[np.logical_and(within_z, within_xy)] = 1
 
-    # if requested, criteria set up for pixels within the hollowed area and these values changed to zero
+    # if requested, criteria set up for pixels within the hollowed area
+    # and these values changed to zero
     if wall_thickness != 0:
-        within_xy_hollowing = xy_distance < ((tube_radius - wall_thickness) / pixel_size)
+        within_xy_hollowing = xy_distance < (
+            (tube_radius - wall_thickness) / pixel_size
+        )
         mask[within_xy_hollowing] = 0
 
     # if requested, a soft edge is added to the mask
@@ -45,7 +78,8 @@ def tube(
 
     return mask
 
-@cli.command(name='tube')
+
+@cli.command(name="tube")  # type: ignore[misc]
 def tube_cli(
     sidelength: int = typer.Option(...),
     tube_height: float = typer.Option(...),
@@ -55,10 +89,48 @@ def tube_cli(
     pixel_size: float = typer.Option(1),
     output: Path = typer.Option(Path("tube.mrc")),
     centering: str = typer.Option("standard"),
-    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50)
-):
-    mask = tube(sidelength, tube_height, tube_diameter, wall_thickness, soft_edge_width, pixel_size, centering, center)
+    center: Annotated[Tuple[int, int, int], typer.Option()] = (50, 50, 50),
+) -> None:
+    """Create a tube mask.
 
+    Creates a 3D mask in the shape of a tube.
+
+    Parameters
+    ----------
+    sidelength : int
+        The sidelength of the cubic mask volume in pixels
+    tube_height : float
+        The height of the tube in physical units
+    tube_diameter : float
+        The diameter of the tube in physical units
+    wall_thickness : float
+        The thickness of the tube wall in physical units
+    soft_edge_width : int
+        Width of the soft edge in pixels
+    pixel_size : float
+        Physical size of each pixel
+    output : Path
+        Path to save the output MRC file
+    centering : str
+        Method for centering the mask in the volume
+    center : tuple
+        (x,y,z) coordinates specifying the center position of the mask
+
+    Returns
+    -------
+    np.ndarray
+        3D numpy array containing the tube mask
+    """
+    mask = tube(
+        sidelength,
+        tube_height,
+        tube_diameter,
+        wall_thickness,
+        soft_edge_width,
+        pixel_size,
+        centering,
+        center,
+    )
     # Save the mask to an MRC file
     with mrcfile.new(output, overwrite=True) as mrc:
         mrc.set_data(mask.astype(np.float32))
